@@ -14,7 +14,7 @@
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
-abstract class ParamDefinition implements iParamDefinition {
+abstract class ParamDefinition implements IParamDefinition {
 
 	/**
 	 * Maps the type identifiers to their corresponding classes.
@@ -242,6 +242,17 @@ abstract class ParamDefinition implements iParamDefinition {
 	 */
 	public function hasDependency( $dependency ) {
 		return in_array( $dependency, $this->getDependencies() );
+	}
+
+	/**
+	 * Returns the list of allowed values, or false if there is no such restriction.
+	 *
+	 * @since 0.5
+	 *
+	 * @return array|false
+	 */
+	public function getAllowedValues() {
+		return $this->allowedValues;
 	}
 
 	/**
@@ -651,6 +662,10 @@ abstract class ParamDefinition implements iParamDefinition {
 		if ( array_key_exists( 'delimiter', $param ) ) {
 			$this->delimiter = $param['delimiter'];
 		}
+
+		if ( array_key_exists( 'manipulatedefault', $param ) ) {
+			$this->setDoManipulationOfDefault( $param['manipulatedefault'] );
+		}
 	}
 
 	/**
@@ -658,15 +673,15 @@ abstract class ParamDefinition implements iParamDefinition {
 	 *
 	 * @since 0.5
 	 *
-	 * @param $param iParam
-	 * @param $definitions array of iParamDefinition
-	 * @param $params array of iParam
+	 * @param $param IParam
+	 * @param $definitions array of IParamDefinition
+	 * @param $params array of IParam
 	 *
 	 * @return array|true
 	 *
 	 * TODO: return error list (ie Status object)
 	 */
-	public function validate( iParam $param, array $definitions, array $params ) {
+	public function validate( IParam $param, array $definitions, array $params ) {
 		if ( $this->isList() ) {
 			$valid = true;
 			$values = $param->getValue();
@@ -683,7 +698,8 @@ abstract class ParamDefinition implements iParamDefinition {
 			return $valid && $this->validateList( $param, $definitions, $params );
 		}
 		else {
-			return $this->validateValue( $param->getValue(), $param, $definitions, $params );
+			$valid = $this->validateValue( $param->getValue(), $param, $definitions, $params );
+			return $valid ? true : array( new ValidationError( 'Error' ) ); // TODO
 		}
 	}
 
@@ -692,11 +708,11 @@ abstract class ParamDefinition implements iParamDefinition {
 	 *
 	 * @since 0.5
 	 *
-	 * @param $param iParam
-	 * @param $definitions array of iParamDefinition
-	 * @param $params array of iParam
+	 * @param $param IParam
+	 * @param $definitions array of IParamDefinition
+	 * @param $params array of IParam
 	 */
-	public function format( iParam $param, array &$definitions, array $params ) {
+	public function format( IParam $param, array &$definitions, array $params ) {
 		if ( $this->isList() ) {
 			$values = $param->getValue();
 
@@ -717,11 +733,11 @@ abstract class ParamDefinition implements iParamDefinition {
 	 *
 	 * @since 0.5
 	 *
-	 * @param $param iParam
-	 * @param $definitions array of iParamDefinition
-	 * @param $params array of iParam
+	 * @param $param IParam
+	 * @param $definitions array of IParamDefinition
+	 * @param $params array of IParam
 	 */
-	protected function formatList( iParam $param, array &$definitions, array $params ) {
+	protected function formatList( IParam $param, array &$definitions, array $params ) {
 		// TODO
 	}
 
@@ -730,13 +746,13 @@ abstract class ParamDefinition implements iParamDefinition {
 	 *
 	 * @since 0.5
 	 *
-	 * @param $param iParam
-	 * @param $definitions array of iParamDefinition
-	 * @param $params array of iParam
+	 * @param $param IParam
+	 * @param $definitions array of IParamDefinition
+	 * @param $params array of IParam
 	 *
 	 * @return boolean
 	 */
-	protected function validateList( iParam $param, array $definitions, array $params ) {
+	protected function validateList( IParam $param, array $definitions, array $params ) {
 		// TODO
 	}
 
@@ -746,13 +762,13 @@ abstract class ParamDefinition implements iParamDefinition {
 	 * @since 0.5
 	 *
 	 * @param $value mixed
-	 * @param $param iParam
-	 * @param $definitions array of iParamDefinition
-	 * @param $params array of iParam
+	 * @param $param IParam
+	 * @param $definitions array of IParamDefinition
+	 * @param $params array of IParam
 	 *
 	 * @return mixed
 	 */
-	protected function formatValue( $value, iParam $param, array &$definitions, array $params ) {
+	protected function formatValue( $value, IParam $param, array &$definitions, array $params ) {
 		// No-op
 	}
 
@@ -762,13 +778,13 @@ abstract class ParamDefinition implements iParamDefinition {
 	 * @since 0.5
 	 *
 	 * @param $value mixed
-	 * @param $param iParam
-	 * @param $definitions array of iParamDefinition
-	 * @param $params array of iParam
+	 * @param $param IParam
+	 * @param $definitions array of IParamDefinition
+	 * @param $params array of IParam
 	 *
 	 * @return boolean
 	 */
-	protected function validateValue( $value, iParam $param, array $definitions, array $params ) {
+	protected function validateValue( $value, IParam $param, array $definitions, array $params ) {
 		if ( $this->allowedValues !== false && !in_array( $value, $this->allowedValues ) ) {
 			return false;
 		}
@@ -823,7 +839,7 @@ abstract class ParamDefinition implements iParamDefinition {
 	 *
 	 * @since 0.5
 	 *
-	 * @param $definitions array of iParamDefinition
+	 * @param $definitions array of IParamDefinition
 	 *
 	 * @return array
 	 * @throws MWException
