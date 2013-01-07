@@ -14,7 +14,7 @@
  */
 
 /**
- * This documenation group collects source code files belonging to Validator.
+ * This documentation group collects source code files belonging to Validator.
  *
  * Please do not use this group name for other code.
  *
@@ -33,7 +33,8 @@ if ( defined( 'Validator_VERSION' ) ) {
 	die( '<b>Error:</b> Tried to include Validator a second time. Please make sure you are including it before any extensions that make use of it.' );
 }
 
-define( 'Validator_VERSION', '0.5.1' );
+define( 'Validator_VERSION', '0.5.2 beta' );
+define( 'ParamProcessor_VERSION', Validator_VERSION );
 
 // Register the internationalization file.
 $wgExtensionMessagesFiles['Validator'] = dirname( __FILE__ ) . '/Validator.i18n.php';
@@ -41,7 +42,7 @@ $wgExtensionMessagesFiles['ValidatorMagic'] = dirname( __FILE__ ) . '/Validator.
 
 $wgExtensionCredits['other'][] = array(
 	'path' => __FILE__,
-	'name' => 'Validator',
+	'name' => 'Validator (ParamProcessor)',
 	'version' => Validator_VERSION,
 	'author' => array( '[https://www.mediawiki.org/wiki/User:Jeroen_De_Dauw Jeroen De Dauw]' ),
 	'url' => 'https://www.mediawiki.org/wiki/Extension:Validator',
