@@ -118,17 +118,6 @@ class_alias( 'ParamProcessor\ProcessingError', 'ProcessingError' ); // Deprecate
 class_alias( 'ParamProcessor\Options', 'ValidatorOptions' ); // Deprecated since 1.0, removal in 1.2
 class_alias( 'ParamProcessor\IParam', 'IParam' ); // Deprecated since 1.0, removal in 1.2
 
-/**
- * @deprecated since 1.0, removal in 1.3
- */
-class Validator extends ParamProcessor\Processor {
-
-	public function __construct() {
-		parent::__construct( new ParamProcessor\Options() );
-	}
-
-}
-
 // utils
 $wgAutoloadClasses['ParserHook']				 	= __DIR__ . '/includes/utils/ParserHook.php';
 $wgAutoloadClasses['ValidatorDescribe']		  		= __DIR__ . '/includes/utils/Describe.php';
